@@ -4,9 +4,9 @@
   "description": "Mern App",
   "main": "server.js",
   "scripts": {
+    "start": "node my-profile-server/server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "client": "npm start --prefix my-portfolio",
-    "start": "node my-profile-server/server.js",
     "server": "nodemon my-profile-server/server.js",
     "dev": "concurrently \"npm start\" \"npm run client\""
   },
