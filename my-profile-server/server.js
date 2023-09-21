@@ -58,7 +58,7 @@ app.use("/api/component/", componentRouter);
 //static files
 app.use(express.static(path.join(__dirname, "../my-portfolio/build")));
 app.get("*", function (req, res) {
-  res.sendFile(path.join(__dirname, "../my-portfolio/build/index.js"));
+  res.sendFile(path.join(__dirname, "../my-portfolio/build/index.html"));
 });
 
 app.listen(PORT, () => {
