@@ -6,7 +6,9 @@ const { verifyToken } = require("../utils/generateToken");
 const User = require("../models/userModel");
 
 const storage = multer.diskStorage({
-  destination: path.join(__dirname, "../../my-portfolio/public/uploads/"),
+  destination: path.join(__dirname, process.env.NODE_ENV === "development"
+  ? "../../my-portfolio/public/uploads/"
+  : "../../my-portfolio/build/uploads/"),
   filename: function (req, file, cb) {
     cb(
       null,
