@@ -8,7 +8,9 @@ const deleteFile = asyncHandler(async (req, res) => {
   // Provide the path to the folder where the file is located
   const folderPath = path.join(
     __dirname,
-    `../../my-portfolio/public/${req.params.folder}/`
+    process.env.NODE_ENV === "development"
+      ? `../../my-portfolio/public/${req.params.folder}/`
+      : `../../my-portfolio/build/${req.params.folder}/`
   );
 
   // Construct the full file path
