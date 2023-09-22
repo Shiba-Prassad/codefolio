@@ -17,7 +17,7 @@ const deleteFile = asyncHandler(async (req, res) => {
   // Use fs.unlink to delete the file
   fs.unlink(filePath, (error) => {
     if (error) {
-      res.status(500).json({ error: "Failed to delete the file" });
+      res.status(500).json({ error: "Failed to delete the file: " + error });
     } else {
       res.json({ message: "File deleted successfully" });
     }
