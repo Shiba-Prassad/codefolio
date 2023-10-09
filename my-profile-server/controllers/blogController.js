@@ -5,134 +5,6 @@ const Blog = require("../models/blogModel");
 const BlogDesc = require("../models/blogDescModel");
 const { ObjectId } = require("mongodb");
 
-// const getBlogList = asyncHandler(async (req, res) => {
-//   let blogList;
-//   try {
-//     if (req.params.token != "undefined") {
-//       const uIds = await verifyToken(req.params.token);
-//       if (uIds) {
-//         let uId = new ObjectId(uIds);
-//         User.aggregate([
-//           //{ $match: { _id: uId } },
-//           {
-//             $lookup: {
-//               from: "blogs", // The target collection name
-//               localField: "_id",
-//               foreignField: "userId",
-//               as: "blogs",
-//               // pipeline: [{ $sort: { _id: -1 } }],
-//             },
-//           },
-
-//           {
-//             $addFields: {
-//               "blogs.myBlog": {
-//                 $cond: {
-//                   if: {
-//                     $eq: [{ $arrayElemAt: ["$blogs.userId", 0] }, uId],
-//                   },
-//                   then: "Yes",
-//                   else: "No",
-//                 },
-//               },
-//             },
-//           },
-//           {
-//             $unwind: "$blogs",
-//           },
-//           {
-//             $lookup: {
-//               from: "blogdescs", // The target collection name
-//               localField: "blogs._id",
-//               foreignField: "blogId",
-//               as: "blogs.blogdescs",
-//               //pipeline: [{ $sort: { slNo: 1 } }],
-//             },
-//           },
-//           {
-//             $project: {
-//               password: 0,
-//             },
-//           },
-//           {
-//             $sort: {
-//               "blogs._id": 1,
-//               "blogs.blogdescs._id": -1,
-//               //"join4.field2": -1,
-//               // Specify the sorting criteria for the fields
-//             },
-//           },
-//         ])
-
-//           // Blog.aggregate([
-//           //   {
-//           //     $lookup: {
-//           //       from: "blogdescs", // The target collection name
-//           //       localField: "_id",
-//           //       foreignField: "blogId",
-//           //       as: "blogdescs",
-//           //     },
-//           //   },
-//           //   {
-//           //     $unwind: "$blogdescs",
-//           //   },
-//           //   // {
-//           //   //   $lookup: {
-//           //   //     from: "users", // The target collection name
-//           //   //     localField: "userId",
-//           //   //     foreignField: "blogdescs._id",
-//           //   //     as: "blogdescs.users",
-//           //   //   },
-//           //   // },
-
-//           // ])
-//           .then((results) => {
-//             return res.status(200).json(results);
-//             // Handle the retrieved posts with the related user data
-//           })
-//           .catch((error) => {
-//             console.error("Error fetching results:", error);
-//             // Handle the error
-//           });
-//       }
-//     } else {
-//       // blogList = await Blog.find({ active: true });
-//       User.aggregate([
-//         {
-//           $lookup: {
-//             from: "blogs", // The target collection name
-//             localField: "_id",
-//             foreignField: "userId",
-//             as: "blogs",
-//           },
-//         },
-//         {
-//           $unwind: "$blogs",
-//         },
-//         {
-//           $lookup: {
-//             from: "blogdescs", // The target collection name
-//             localField: "blogs._id",
-//             foreignField: "blogId",
-//             as: "blogs.blogdescs",
-//             pipeline: [{ $sort: { slNo: 1 } }],
-//           },
-//         },
-//       ])
-//         .then((results) => {
-//           return res.status(200).json(results);
-//           // Handle the retrieved posts with the related user data
-//         })
-//         .catch((error) => {
-//           console.error("Error fetching results:", error);
-//           // Handle the error
-//         });
-//     }
-//   } catch (error) {
-//     console.log(error);
-//   }
-// });
-
 const getBlogList = asyncHandler(async (req, res) => {
   const blogId = req.body.blogId;
   const blogList = blogId
@@ -180,7 +52,6 @@ const createBlogList = asyncHandler(async (req, res) => {
       res.status(500).json({ error: "You have not access. Please login." });
     }
   } catch (error) {
-    console.log(error);
     res.status(500).json({ error });
   }
 });
@@ -206,7 +77,6 @@ const deleteBlogList = asyncHandler(async (req, res) => {
     const blogId = req.body.blogId;
     const deleteData = await Blog.findOneAndDelete({ _id: blogId, userId });
     if (deleteData) {
-      console.log("Blog deleted");
       const deleteDesc = await BlogDesc.deleteMany({ blogId });
       if (deleteDesc) {
         res.status(200).json({ success: "Blog deleted successfully." });
@@ -214,7 +84,6 @@ const deleteBlogList = asyncHandler(async (req, res) => {
         res.status(400).json({ error: "Blog couldn't deleted." });
       }
     } else {
-      console.log("Blog not deleted");
       res.status(400).json({ error: "Blog couldn't updated." });
     }
   } catch (error) {

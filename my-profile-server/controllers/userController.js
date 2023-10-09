@@ -16,7 +16,6 @@ const registerUser = asyncHandler(async (req, res) => {
     const otp = await Math.floor(1000 + Math.random() * 9000);
     const salt = await bcrypt.genSalt(10);
     const hashedOtp = await bcrypt.hash(otp.toString(), salt);
-    console.log(otp);
     const user = await User.create({
       name,
       email,
@@ -292,7 +291,6 @@ const editUserProfile = asyncHandler(async (req, res) => {
       res.status(500).json({ error: "user not found" });
     }
   } catch (error) {
-    console.log(error);
     res.status(500).json({ error: "User Details not found" });
   }
 });

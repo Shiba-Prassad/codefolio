@@ -4,6 +4,7 @@ const asyncHandler = require("express-async-handler");
 const { verifyToken } = require("../utils/generateToken");
 const User = require("../models/userModel");
 const fs = require("fs");
+const Base64 = require("../models/base64Model");
 // const mammoth = require("mammoth");
 // const { convertToPDF } = require("../utils/documentConverter");
 
@@ -14,21 +15,6 @@ const storage = multer.diskStorage({
   },
 });
 
-// createPdfFile = async (req, res, next) => {
-//   try {
-//     const { file } = req;
-//     const pdfBuffer = await convertToPDF(file.path);
-//     // Save or process the PDF buffer as needed
-//     console.log(file);
-//     res.status(200);
-//     res.set("Content-Type", "application/pdf");
-//     res.send(pdfBuffer);
-//   } catch (error) {
-//     next(error);
-//   }
-// };
-
-// Initialize the upload middleware
 const upload = multer({
   storage: storage,
 }).single("image");
@@ -38,15 +24,20 @@ const createPdf = asyncHandler(async (req, res) => {
     const _id = await verifyToken(req.headers.token);
     const user = await User.findById(_id);
     if (user) {
-      upload(req, res, (err) => {
+      upload(req, res, async (err) => {
         if (err) {
           res.status(400).json({ message: err });
         } else {
           if (req.file == undefined) {
             res.status(400).json({ message: "Error: No file selected!" });
           } else {
+            const fileAsBase64 = await fs.readFileSync(req.file.path, "base64");
+            await Base64.create({
+              fileName: req.file.filename,
+              fileBase64: fileAsBase64,
+            });
             res.status(200).json({
-              message: "Image uploaded successfully!",
+              message: "file uploaded successfully!",
               filename: req.file.filename,
             });
             //createPdfFile(req, res);

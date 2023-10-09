@@ -7,7 +7,6 @@ async function convertToPDF(html) {
   // const pdfBuffer = await page.pdf();
   // await browser.close();
   // return pdfBuffer;
-  console.log("Hello");
   return html;
 }
 

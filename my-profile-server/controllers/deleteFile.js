@@ -1,6 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const asyncHandler = require("express-async-handler");
+const Base64 = require("../models/base64Model");
 
 const deleteFile = asyncHandler(async (req, res) => {
   const filename = req.params.fname;
@@ -15,11 +16,11 @@ const deleteFile = asyncHandler(async (req, res) => {
 
   // Construct the full file path
   const filePath = folderPath + filename;
-
+  await Base64.findOneAndDelete({ fileName: filename });
   // Use fs.unlink to delete the file
   fs.unlink(filePath, (error) => {
     if (error) {
-      res.status(500).json({ error: process.env.NODE_ENV + "Failed to delete the file: " + error });
+      res.status(200).json({ error: "Failed to delete the file: " + error });
     } else {
       res.json({ message: "File deleted successfully" });
     }

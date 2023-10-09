@@ -4,6 +4,8 @@ const asyncHandler = require("express-async-handler");
 const { authUser } = require("./userController");
 const { verifyToken } = require("../utils/generateToken");
 const User = require("../models/userModel");
+const Base64 = require("../models/base64Model");
+var fs = require("fs");
 
 const storage = multer.diskStorage({
   destination: path.join(__dirname, process.env.NODE_ENV === "development"
@@ -46,13 +48,21 @@ const uploadFile = asyncHandler(async (req, res) => {
     const _id = await verifyToken(req.headers.token);
     const user = await User.findById(_id);
     if (user) {
-      upload(req, res, (err) => {
+      upload(req, res, async (err) => {
         if (err) {
           res.status(400).json({ message: err });
         } else {
           if (req.file == undefined) {
             res.status(400).json({ message: "Error: No file selected!" });
           } else {
+            const imageAsBase64 = await fs.readFileSync(
+              req.file.path,
+              "base64"
+            );
+            await Base64.create({
+              fileName: req.file.filename,
+              fileBase64: imageAsBase64,
+            });
             res.status(200).json({
               message: "Image uploaded successfully!",
               filename: req.file.filename,

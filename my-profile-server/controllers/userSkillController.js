@@ -17,7 +17,6 @@ const getSkillQnA = asyncHandler(async (req, res) => {
       }
     }
   } catch (error) {
-    console.log(error);
     res.status(200).json({ error: "Skills QnA screen data not found" });
   }
 });
@@ -50,7 +49,7 @@ const createSkillQnAData = asyncHandler(async (req, res) => {
 });
 
 const updateSkillQnAData = asyncHandler(async (req, res) => {
-  const { active, question, answer, skillId, token, id } = req.body;
+  const { active, question, answer, token, id } = req.body;
   try {
     const userId = await verifyToken(token);
     const existData = await SkillQnA.findOne({ userId, _id: id });

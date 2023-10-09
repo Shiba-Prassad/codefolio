@@ -2,6 +2,7 @@ const UserService = require("../models/userServiceModel");
 const asyncHandler = require("express-async-handler");
 const { verifyToken } = require("../utils/generateToken");
 const User = require("../models/userModel");
+const Base64 = require("../models/base64Model");
 const path = require("path");
 const fs = require("fs");
 
@@ -115,15 +116,24 @@ const deleteUserServiceData = asyncHandler(async (req, res) => {
   const { id, token } = req.body;
   try {
     const userId = await verifyToken(token);
-    const existData = await UserService.findOne({ userId });
+    const existData = await UserService.findOne({ userId, _id: id });
     if (!existData) {
       return res
         .status(200)
         .json({ error: "You don't have access.Please Login." });
-    }
-    const deleteData = await UserService.findOneAndDelete({ _id: id });
-    if (deleteData) {
-      res.status(200).json(deleteData);
+    } else {
+      const userServiceImage = existData.serviceImage;
+      if (
+        userServiceImage !== null &&
+        userServiceImage !== "" &&
+        userServiceImage !== undefined
+      ) {
+        await Base64.findOneAndDelete({ fileName: userServiceImage });
+      }
+      const deleteData = await UserService.findOneAndDelete({ _id: id });
+      if (deleteData) {
+        res.status(200).json(deleteData);
+      }
     }
   } catch (error) {
     res.status(200).json({ error: error });
