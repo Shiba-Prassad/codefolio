@@ -14,6 +14,7 @@ app.use(bodyParser.json({ limit: "100mb" }));
 app.use(bodyParser.urlencoded({ limit: "100mb", extended: true }));
 
 const userRouter = require("./routes/userRouter");
+const commonRouter = require("./routes/commonRouter");
 const homeRouter = require("./routes/homeRouter");
 const serviceRouter = require("./routes/serviceRouter");
 const skillRouter = require("./routes/skillRouter");
@@ -43,6 +44,7 @@ app.get("/api", (req, res) => {
   res.json(products);
 });
 app.use("/api/user/", userRouter);
+app.use("/api/common/", commonRouter);
 app.use("/api/home/", homeRouter);
 app.post("/api/upload", uploadFile);
 app.post("/api/uploadDoc/", createPdf);
