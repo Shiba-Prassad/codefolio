@@ -147,7 +147,6 @@ const getHomeScreenData = asyncHandler(async (req, res) => {
       }
     }
   } catch (error) {
-    console.log(error);
     res.status(200).json({ error: "Home screen data not found" });
   }
 });

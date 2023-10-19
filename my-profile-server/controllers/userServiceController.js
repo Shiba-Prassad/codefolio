@@ -1,10 +1,121 @@
 const UserService = require("../models/userServiceModel");
+const ServiceQnA = require("../models/serviceQnAModel");
 const asyncHandler = require("express-async-handler");
 const { verifyToken } = require("../utils/generateToken");
 const User = require("../models/userModel");
 const Base64 = require("../models/base64Model");
 const path = require("path");
 const fs = require("fs");
+
+const getServiceQnA = asyncHandler(async (req, res) => {
+  try {
+    if (req.params.serviceId && req.params.serviceId != "undefined") {
+      const getData = await ServiceQnA.find({
+        serviceId: req.params.serviceId,
+      });
+      if (getData) {
+        res.status(200).json(getData);
+      } else {
+        res.status(400).json({ error: "Data Not Found" });
+      }
+    }
+  } catch (error) {
+    res.status(200).json({ error: "Services QnA screen data not found" });
+  }
+});
+
+const createServiceQnAData = asyncHandler(async (req, res) => {
+  const { question, answer, serviceId, token } = req.body;
+  try {
+    let noOfQnA = 0;
+    const _id = await verifyToken(token);
+    const existData = await ServiceQnA.find({ serviceId: serviceId });
+    if (existData) {
+      noOfQnA = existData.length + 1;
+    } else {
+      noOfQnA = existData.length + 1;
+    }
+
+    const createData = await ServiceQnA.create({
+      userId: _id,
+      serviceId,
+      question,
+      answer,
+      slNo: noOfQnA,
+    });
+    if (createData) {
+      res.status(200).json({ createData });
+    }
+  } catch (error) {
+    res.status(200).json({ error: "Service QnA screen data not found" });
+  }
+});
+
+const updateServiceQnAData = asyncHandler(async (req, res) => {
+  const { active, question, answer, token, id } = req.body;
+  try {
+    const userId = await verifyToken(token);
+    const existData = await ServiceQnA.findOne({ userId, _id: id });
+    if (!existData) {
+      return res
+        .status(200)
+        .json({ error: "You don't have access. Please Login." });
+    } else {
+      const updateData = await ServiceQnA.findOneAndUpdate(
+        { _id: id },
+        {
+          $set: {
+            active: active,
+            question: question,
+            answer: answer,
+            userId: userId,
+          },
+        },
+        { returnOriginal: false }
+      );
+      if (updateData) {
+        res.status(200).json(updateData);
+      }
+    }
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+const deleteServiceQnAData = asyncHandler(async (req, res) => {
+  const { id, token } = req.body;
+  try {
+    const userId = await verifyToken(token);
+    const existData = await ServiceQnA.findOne({ userId, _id: id });
+    if (!existData) {
+      return res
+        .status(200)
+        .json({ error: "You don't have access.Please Login." });
+    } else {
+      const deleteData = await ServiceQnA.findOneAndDelete({ _id: id });
+      if (deleteData) {
+        res.status(200).json(deleteData);
+      }
+    }
+  } catch (error) {
+    res.status(200).json({ error: error });
+  }
+});
+
+const getServiceInfo = asyncHandler(async (req, res) => {
+  try {
+    if (req.params._id && req.params._id != "undefined") {
+      const getData = await UserService.findOne({ _id: req.params._id });
+      if (getData) {
+        res.status(200).json(getData);
+      } else {
+        res.status(400).json({ error: "Data Not Found" });
+      }
+    }
+  } catch (error) {
+    res.status(200).json({ error: "Home screen data not found" });
+  }
+});
 
 const getUserServiceData = asyncHandler(async (req, res) => {
   try {
@@ -145,4 +256,9 @@ module.exports = {
   createUserServiceData,
   updateUserServiceData,
   deleteUserServiceData,
+  getServiceInfo,
+  getServiceQnA,
+  createServiceQnAData,
+  updateServiceQnAData,
+  deleteServiceQnAData,
 };
